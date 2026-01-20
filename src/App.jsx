@@ -21,12 +21,14 @@ export default function App() {
       toast.error("Task title cannot be empty");
       return;
     }
+
     const newTask = {
       id: crypto.randomUUID(),
       title: trimmed,
       done: false,
       createdAt: Date.now(),
     };
+
     setTasks((prev) => [newTask, ...prev]);
     toast.success("Task added");
   };
@@ -53,43 +55,49 @@ export default function App() {
   };
 
   const toggleFocusMode = () => {
-    setFocusMode((v) => {
-      const next = !v;
-      toast(next ? "Focus mode enabled" : "Focus mode disabled", { type: "default" });
-      return next;
+    const next = !focusMode;
+    setFocusMode(next);
+
+    toast(next ? "Focus mode enabled" : "Focus mode disabled", {
+      toastId: "focus-mode-toggle",
+      type: "default",
     });
   };
 
   return (
-    <div className="container">
-      <Header
-        total={stats.total}
-        done={stats.done}
-        focusMode={focusMode}
-        onToggleFocus={toggleFocusMode}
-        onClearDone={clearDone}
-      />
+    <div className="page">
+      <div className="container">
+        <div className="card">
+          <Header
+            total={stats.total}
+            done={stats.done}
+            focusMode={focusMode}
+            onToggleFocus={toggleFocusMode}
+            onClearDone={clearDone}
+          />
+        </div>
 
-      <IdleWatcher
-        focusMode={focusMode}
-        onIdle={() => {
-          toast.warning("You seem idle. Need a break?");
-        }}
-        onActive={() => {
-          toast.success("Welcome back!");
-        }}
-      />
+        <IdleWatcher
+          focusMode={focusMode}
+          onIdle={() => toast.warning("You seem idle. Need a break?")}
+          onActive={() => toast.success("Welcome back!")}
+        />
 
-      <TaskForm onAdd={addTask} disabled={focusMode && stats.total > 0} />
+        <div className="card">
+          <TaskForm onAdd={addTask} disabled={focusMode && stats.total > 0} />
+        </div>
 
-      <TaskList
-        tasks={tasks}
-        focusMode={focusMode}
-        onToggleDone={toggleDone}
-        onRemove={removeTask}
-      />
+        <div className="card section">
+          <TaskList
+            tasks={tasks}
+            focusMode={focusMode}
+            onToggleDone={toggleDone}
+            onRemove={removeTask}
+          />
+        </div>
 
-      <ToastContainer position="bottom-right" autoClose={2500} theme="light" />
+        <ToastContainer position="bottom-right" autoClose={2500} theme="dark" />
+      </div>
     </div>
   );
 }
